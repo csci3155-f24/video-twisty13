@@ -1,4 +1,4 @@
-Speedometer App
+Speedometer App - Tristan Barnes & Ali Haroon
 
 Overview
 
