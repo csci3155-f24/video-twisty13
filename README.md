@@ -120,29 +120,41 @@ Navigation: The app uses NavigationLink for transitioning between views, providi
 
 Script for Video Tutorial
 
-Introduction (1 minute)
+Introduction (1.5 minutes)
 
 Greeting:
 
-"Hi, welcome to this tutorial on building a real-time Speedometer App using Swift, CoreLocation, and SwiftUI."
+"Hi everyone! Welcome to our tutorial on building a real-time Speedometer App using Swift, CoreLocation, and SwiftUI. We're excited to guide you through this project step by step."
 
 Overview:
 
-"We’ll walk through the key features of the app, its implementation, and how it connects to programming concepts like callbacks, state management, and abstract data types."
+"In this video, we'll explore the key features of our Speedometer App, discuss its implementation, and connect it to essential programming concepts such as callbacks, state management, and abstract data types. We'll also share some insights from our learning journey with Swift."
 
 Objective:
 
-"By the end of this video, you’ll understand how to create a similar app and the concepts behind it."
+"By the end of this tutorial, you'll have a clear understanding of how to create a similar app and grasp the underlying concepts that make it work."
+Our Journey Learning Swift (2 minutes)
 
+Introduction to Swift:
+
+"When we decided to build this app, we knew that mastering Swift was essential. Swift is Apple's powerful and intuitive programming language for iOS development, known for its safety, performance, and modern syntax."
+
+Learning Process:
+
+"We started by diving into Swift's fundamentals—learning about variables, data types, control flow, and object-oriented programming. Utilizing resources like Apple's official Swift documentation, online courses, and community forums helped us build a strong foundation."
+
+Applying Knowledge:
+
+"Building the Speedometer App was a practical way for us to apply what we learned. It allowed us to tackle real-world problems, such as handling asynchronous location updates and managing state in a dynamic user interface."
 CoreLocation Integration (4 minutes)
 
 Explain CoreLocation:
 
-"CoreLocation is a framework that enables GPS-based tracking. It provides precise location, speed, and heading information."
+"CoreLocation is a robust framework that enables GPS-based tracking in iOS apps. It provides precise location data, including latitude, longitude, speed, and heading information, which are crucial for our Speedometer App."
 
 Delegation and Callbacks:
 
-"The app uses CLLocationManager and its delegate method didUpdateLocations to receive location updates asynchronously."
+"We use CLLocationManager along with its delegate method didUpdateLocations to receive location updates asynchronously. This delegation pattern ensures our app responds to location changes in real-time without blocking the main thread."
 
 func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     if let location = locations.last {
@@ -155,21 +167,20 @@ func locationManager(_ manager: CLLocationManager, didUpdateLocations locations:
 
 Location Permissions:
 
-"The app dynamically requests location permissions using requestWhenInUseAuthorization."
+"To access location data, our app requests the user's permission dynamically using requestWhenInUseAuthorization(). It's important to update the Info.plist with NSLocationWhenInUseUsageDescription to explain why the app needs access to their location."
 
 Distance Calculation:
 
-"The app calculates total workout distance using location.distance(from: previousLocation)."
-
+"Beyond speed, our app calculates the total workout distance by tracking the distance between consecutive location updates using location.distance(from: previousLocation). This allows users to see how far they've traveled during their workout."
 SwiftUI Integration (4 minutes)
 
 Dynamic UI with SwiftUI:
 
-"SwiftUI enables real-time UI updates using state management tools like @StateObject."
+"SwiftUI revolutionizes how we build user interfaces with its declarative syntax. It allows us to create dynamic and responsive UIs that update in real-time based on data changes using state management tools like @StateObject."
 
-Example:
+Example UI Element:
 
-Walk through the speed display UI in ContentView.swift:
+"Let's look at how we display the speed in our ContentView.swift:"
 
 Text(String(format: "%.2f mph", locationManager.speed))
     .font(.system(size: 72))
@@ -177,34 +188,176 @@ Text(String(format: "%.2f mph", locationManager.speed))
 
 Composable Views:
 
-"The app splits functionality into separate views, such as ContentView for tracking and WorkoutSummaryView for displaying results."
-
+"We've organized our app into separate, reusable views to keep the codebase clean and manageable. For instance, ContentView handles the real-time tracking, while WorkoutSummaryView displays the workout results."
 Programming Concepts (3 minutes)
 
 Callbacks:
 
-"The didUpdateLocations method is an example of a callback that triggers upon receiving new location data."
+"The didUpdateLocations method is a perfect example of a callback. It's invoked automatically when new location data is available, allowing our app to handle updates asynchronously."
 
 Functions as Values:
 
-"The timer in LocationManager demonstrates passing a function as a value to schedule repeated execution."
+"In Swift, functions can be treated as first-class citizens. For example, we use a timer with a closure to perform repeated tasks:"
 
-Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in ... }
+Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+    // Perform repeated task
+}
 
 Abstract Data Types:
 
-"CLLocation abstracts location properties, simplifying calculations like distance and speed."
+"CLLocation is an abstract data type that encapsulates location-related properties, simplifying tasks like calculating distance and speed without worrying about the underlying implementation."
+Building the App Step-by-Step (6 minutes)
 
-Conclusion (1 minute)
+Project Setup:
+
+"We started by setting up a new SwiftUI project in Xcode named 'SpeedometerApp'. Ensuring that Swift and SwiftUI were selected during setup was crucial for seamless integration."
+
+Implementing LocationManager:
+
+"Our LocationManager class handles all location-related functionalities. It initializes CLLocationManager, requests permissions, and starts updating the location:"
+
+import Foundation
+import CoreLocation
+
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private var locationManager = CLLocationManager()
+    @Published var speed: Double = 0.0
+    @Published var totalDistance: Double = 0.0
+    private var previousLocation: CLLocation?
+
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+
+        if let previous = previousLocation {
+            let distance = location.distance(from: previous) / 1609.34 // Convert to miles
+            totalDistance += distance
+        }
+
+        previousLocation = location
+
+        let speedInMPH = location.speed >= 0 ? location.speed * 2.23694 : 0.0
+        DispatchQueue.main.async {
+            self.speed = speedInMPH
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Failed to get user location: \(error.localizedDescription)")
+    }
+}
+
+Designing the ContentView:
+
+"In ContentView, we display the current speed and provide navigation to the workout summary:"
+
+import SwiftUI
+
+struct ContentView: View {
+    @StateObject var locationManager = LocationManager()
+    @State private var showingSummary = false
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                Text("Current Speed")
+                    .font(.headline)
+                    .padding(.top, 50)
+
+                Text(String(format: "%.2f mph", locationManager.speed))
+                    .font(.system(size: 72))
+                    .fontWeight(.bold)
+                    .foregroundColor(.blue)
+                    .padding()
+
+                Spacer()
+
+                Button(action: {
+                    showingSummary = true
+                }) {
+                    Text("View Summary")
+                        .font(.title2)
+                        .padding()
+                        .background(Color.blue.opacity(0.7))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding(.bottom, 50)
+                .sheet(isPresented: $showingSummary) {
+                    WorkoutSummaryView(totalDistance: locationManager.totalDistance, duration: 3600) // Example duration
+                }
+            }
+            .navigationBarTitle("Speedometer", displayMode: .inline)
+        }
+    }
+}
+
+Creating WorkoutSummaryView:
+
+"The WorkoutSummaryView displays the total distance and workout duration:"
+
+struct WorkoutSummaryView: View {
+    var totalDistance: Double
+    var duration: TimeInterval
+
+    var body: some View {
+        VStack {
+            Text("Workout Summary")
+                .font(.largeTitle)
+                .padding()
+
+            HStack {
+                Text("Distance:")
+                    .font(.headline)
+                Spacer()
+                Text(String(format: "%.2f miles", totalDistance))
+                    .font(.body)
+            }
+            .padding()
+
+            HStack {
+                Text("Duration:")
+                    .font(.headline)
+                Spacer()
+                Text(formatDuration(duration))
+                    .font(.body)
+            }
+            .padding()
+
+            Spacer()
+        }
+        .padding()
+    }
+
+    func formatDuration(_ duration: TimeInterval) -> String {
+        let hours = Int(duration) / 3600
+        let minutes = (Int(duration) % 3600) / 60
+        let seconds = Int(duration) % 60
+        return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    }
+}
+
+Conclusion (1.5 minutes)
 
 Recap:
 
-"We explored CoreLocation, SwiftUI, and programming concepts to build a real-time Speedometer App."
+"In this tutorial, we walked through building a real-time Speedometer App using Swift, CoreLocation, and SwiftUI. We integrated CoreLocation for GPS tracking, designed a dynamic UI with SwiftUI, and applied key programming concepts like callbacks, state management, and abstract data types."
 
 Encouragement:
 
-"Try building this app yourself and extend it with more features like elevation tracking or offline maps."
+"We encourage you to try building this app yourself. Once you're comfortable with the basics, consider adding more features such as elevation tracking or offline maps to enhance the app's functionality."
+
+Acknowledging Our Learning:
+
+"Working on this project together reinforced our understanding of Swift and iOS development. Collaborating allowed us to tackle challenges more effectively and share valuable insights."
 
 Outro:
 
-"Thank you for watching" 
+"Thank you for watching! If you found this tutorial helpful, please give it a thumbs up and subscribe for more iOS development content. Feel free to leave any questions or suggestions in the comments below. Happy coding, and see you in the next video!"
