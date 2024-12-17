@@ -1,5 +1,7 @@
 Speedometer App - Tristan Barnes & Ali Haroon
 
+Video Link: https://youtu.be/sI2_r-wJWU0
+
 Overview
 
 The Speedometer App is a Swift-based iOS application that leverages CoreLocation and SwiftUI to provide real-time GPS tracking for workouts. Users can monitor their speed, distance, and workout duration while navigating through a simple, intuitive interface. This project demonstrates the seamless integration of CoreLocation with SwiftUI and highlights key programming concepts such as callbacks, state management, and abstract data types.
