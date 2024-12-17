@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>UIApplicationSceneManifest</key>
+    <dict>
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <true/>
+        <key>UISceneConfigurations</key>
+        <dict/>
+    </dict>
+
+    <!-- Add the Location Usage Description Key -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app requires your location to display your current speed.</string>
+
+    <!-- Optional: Add the Always Usage Description if background location is needed -->
+    <!--
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to your location even when it's not in use to provide continuous speed updates.</string>
+    -->
+</dict>
+</plist>
