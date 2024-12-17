@@ -323,6 +323,8 @@ Bindings: SwiftUI bindings such as $region in the Map View synchronize data betw
 
 Navigation: The app uses NavigationLink for transitioning between views, providing a clean user experience.
 
+
+
 ---
 
 Script for Video Tutorial
@@ -414,4 +416,4 @@ Encouragement:
 
 Outro:
 
-"Thank you for watching!"v
+"Thank you for watching."
