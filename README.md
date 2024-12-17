@@ -322,3 +322,96 @@ Declarative Syntax: UI components like Text, Button, and Map are created using a
 Bindings: SwiftUI bindings such as $region in the Map View synchronize data between the model and view.
 
 Navigation: The app uses NavigationLink for transitioning between views, providing a clean user experience.
+
+---
+
+Script for Video Tutorial
+
+Introduction (1 minute)
+
+Greeting:
+
+"Hi, welcome to this tutorial on building a real-time Speedometer App using Swift, CoreLocation, and SwiftUI."
+
+Overview:
+
+"We’ll walk through the key features of the app, its implementation, and how it connects to programming concepts like callbacks, state management, and abstract data types."
+
+Objective:
+
+"By the end of this video, you’ll understand how to create a similar app and the concepts behind it."
+
+CoreLocation Integration (4 minutes)
+
+Explain CoreLocation:
+
+"CoreLocation is a framework that enables GPS-based tracking. It provides precise location, speed, and heading information."
+
+Delegation and Callbacks:
+
+"The app uses CLLocationManager and its delegate method didUpdateLocations to receive location updates asynchronously."
+
+func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    if let location = locations.last {
+        let speedInMPH = location.speed >= 0 ? location.speed * 2.23694 : 0.0
+        DispatchQueue.main.async {
+            self.speed = speedInMPH
+        }
+    }
+}
+
+Location Permissions:
+
+"The app dynamically requests location permissions using requestWhenInUseAuthorization."
+
+Distance Calculation:
+
+"The app calculates total workout distance using location.distance(from: previousLocation)."
+
+SwiftUI Integration (4 minutes)
+
+Dynamic UI with SwiftUI:
+
+"SwiftUI enables real-time UI updates using state management tools like @StateObject."
+
+Example:
+
+Walk through the speed display UI in ContentView.swift:
+
+Text(String(format: "%.2f mph", locationManager.speed))
+    .font(.system(size: 72))
+    .fontWeight(.bold)
+
+Composable Views:
+
+"The app splits functionality into separate views, such as ContentView for tracking and WorkoutSummaryView for displaying results."
+
+Programming Concepts (3 minutes)
+
+Callbacks:
+
+"The didUpdateLocations method is an example of a callback that triggers upon receiving new location data."
+
+Functions as Values:
+
+"The timer in LocationManager demonstrates passing a function as a value to schedule repeated execution."
+
+Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in ... }
+
+Abstract Data Types:
+
+"CLLocation abstracts location properties, simplifying calculations like distance and speed."
+
+Conclusion (1 minute)
+
+Recap:
+
+"We explored CoreLocation, SwiftUI, and programming concepts to build a real-time Speedometer App."
+
+Encouragement:
+
+"Try building this app yourself and extend it with more features like elevation tracking or offline maps."
+
+Outro:
+
+"Thank you for watching!"v
